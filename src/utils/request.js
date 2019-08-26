@@ -3,9 +3,21 @@ import { Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
-const showError = res => {
+const errorMessage = {
+  400: '参数错误',
+  401: '登录已失效，请重新登录',
+  403: '没有权限，请联系管理员',
+  404: '访问资源不存在',
+  422: '参数格式不正确',
+  500: '服务器发生错误，请稍后再试',
+  502: '网关错误',
+  503: '服务不可用，服务器暂时过载或维护',
+  504: '网关超时'
+}
+
+const showError = (res) => {
   const { message: msg } = res.data
-  msg && Message.error(msg)
+  Message.error(msg || errorMessage[res.status] || `服务器异常 (code: ${res.status})`)
 }
 
 // create an axios instance
@@ -38,37 +50,15 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
-    const { data: { data }, status } = response
-    return { data, status }
+    const { data: { data }, meta, status } = response
+    return { data, meta, status }
   },
   error => {
     console.log('err' + error) // for debug
     const { response: res } = error
 
     if (res) {
-      switch (res.status) {
-        case 404:
-          Message.error('访问资源不存在')
-          break
-        case 401:
-          Message.error('登录已失效，请重新登录')
-          break
-        case 400:
-          showError(res)
-          break
-        case 403:
-          showError(res)
-          break
-        case 422:
-          Message.error('参数格式错误')
-          break
-        case 429:
-          Message.error('操作太频繁，请稍后再试')
-          break
-        default:
-          Message.error(`服务器异常(code: ${res.status})`)
-          break
-      }
+      showError(res)
     } else {
       if (error instanceof axios.Cancel) {
         console.log(error.toString())
