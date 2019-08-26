@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/user'
+import authApi from '@/api/auth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 
@@ -30,24 +30,22 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
-    const { username, password } = userInfo
-    return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
+  async loginByUsername({ commit }, userInfo) {
+    const requestData = {
+      username: userInfo.username.trim(),
+      password: userInfo.password
+    }
+
+    const { data } = await authApi.loginByUsername(requestData)
+    commit('SET_TOKEN', data.token)
+    setToken(data.token)
+    return data
   },
 
   // get user info
-  getInfo({ commit, state }) {
+  getInfo({ commit }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      authApi.getInfo().then(response => {
         const { data } = response
 
         if (!data) {
@@ -75,7 +73,7 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      authApi.logout(state.token).then(() => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         removeToken()
