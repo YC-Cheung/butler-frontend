@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import { Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 
@@ -10,7 +10,7 @@ const showError = res => {
 
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  baseURL: process.env.VUE_APP_API_DOMAIN + process.env.VUE_APP_API_PREFIX, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 5000 // request timeout
 })
@@ -70,10 +70,10 @@ service.interceptors.response.use(
           break
       }
     } else {
-      if (err instanceof axios.Cancel) {
-        console.log(err.toString())
+      if (error instanceof axios.Cancel) {
+        console.log(error.toString())
       } else {
-        debounceMsg('请求失败')
+        Message.error('请求失败')
       }
     }
   }
