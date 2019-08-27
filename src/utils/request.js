@@ -50,8 +50,8 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
-    const { data: { data }, meta, status } = response
-    return { data, meta, status }
+    const { data: { data, meta }, status } = response
+    return meta ? { data, meta, status } : { data, status }
   },
   error => {
     console.log('err' + error) // for debug

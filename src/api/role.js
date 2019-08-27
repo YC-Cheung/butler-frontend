@@ -7,10 +7,11 @@ export function getRoutes() {
   })
 }
 
-export function getRoles() {
+export function getRoles(query) {
   return request({
     url: '/roles',
-    method: 'get'
+    method: 'get',
+    params: query
   })
 }
 
