@@ -15,3 +15,11 @@ export function addUser(data) {
     data
   })
 }
+
+export function updateUser(id, data) {
+  return request({
+    url: `/users/${id}`,
+    method: 'patch',
+    data
+  })
+}

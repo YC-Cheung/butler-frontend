@@ -12,6 +12,16 @@
       </el-table-column>
       <el-table-column prop="created_at" label="创建时间"></el-table-column>
       <el-table-column prop="updated_at" label="更新时间"></el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-tooltip content="编辑" placement="top">
+            <el-button size="medium" type="info" icon="el-icon-edit" circle plain @click="handleUpdate(scope.$index,scope.row)"></el-button>
+          </el-tooltip>
+          <el-tooltip content="删除" placement="top">
+            <el-button circle plain size="medium" type="danger" icon="el-icon-delete" @click="handleDelete(scope.$index,scope.row)"></el-button>
+          </el-tooltip>
+        </template>
+      </el-table-column>
     </el-table>
     <pagination :page="page"></pagination>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
@@ -43,7 +53,7 @@
 </template>
 
 <script>
-import { getUsers, addUser } from '@/api/user'
+import { getUsers, addUser, updateUser } from '@/api/user'
 import { getRoles } from '@/api/role'
 import Pagination from '@/components/Pagination'
 import { resetTemp } from '@/utils'
@@ -152,11 +162,13 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (!valid) return
         addUser(this.temp).then((res) => {
-          this.temp.uid = res.data.uid// 后台传回来新增记录的id
-          this.temp.created = res.data.created// 后台传回来新增记录的时间
-          this.temp.roleList = []
-          this.tableData.unshift(Object.assign({}, this.temp))
-          ++this.tablePage.total
+          const { data } = res
+          this.temp.id = data.id// 后台传回来新增记录的id
+          this.temp.created_at = data.created_at// 后台传回来新增记录的时间
+          this.temp.updated_at = data.updated_at
+          this.temp.roles = []
+          this.users.unshift(Object.assign({}, this.temp))
+          ++this.page.total
           this.dialogFormVisible = false
           this.$message.success('添加成功')
         })
@@ -165,8 +177,8 @@ export default {
     handleUpdate(idx, row) {
       this.temp = Object.assign({}, row) // copy obj
       this.temp.idx = idx
-      this.temp.pwd = null
-      this.temp.pwd2 = null
+      this.temp.password = null
+      this.temp.password_confirmation = null
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => this.$refs['dataForm'].clearValidate())
@@ -174,13 +186,14 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (!valid) return
-        // const tempData = Object.assign({}, this.temp)// copy obj
-        // userApi.updateUser(tempData).then(res => {
-        //   tempData.updated = res.data.updated
-        //   this.tableData.splice(tempData.idx, 1, tempData)
-        //   this.dialogFormVisible = false
-        //   this.$message.success('更新成功')
-        // })
+        const tempData = Object.assign({}, this.temp)// copy obj
+        updateUser(tempData.id, tempData).then(res => {
+          const { data } = res
+          tempData.updated_at = data.updated_at
+          this.users.splice(tempData.idx, 1, tempData)
+          this.dialogFormVisible = false
+          this.$message.success('更新成功')
+        })
       })
     }
   }
