@@ -348,3 +348,15 @@ export function removeClass(ele, cls) {
     ele.className = ele.className.replace(reg, ' ')
   }
 }
+
+/**
+ *Reset temp object
+ * @param {object} temp
+ */
+export function resetTemp(temp) {
+  // eslint-disable-next-line no-unused-vars
+  for (const prop in temp) {
+    temp[prop] = null
+  }
+  return temp
+}
