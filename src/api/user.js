@@ -23,3 +23,10 @@ export function updateUser(id, data) {
     data
   })
 }
+
+export function deleteUser(id) {
+  return request({
+    url: `/users/${id}`,
+    method: 'delete'
+  })
+}

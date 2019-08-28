@@ -15,7 +15,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-tooltip content="编辑" placement="top">
-            <el-button size="medium" type="info" icon="el-icon-edit" circle plain @click="handleUpdate(scope.$index,scope.row)"></el-button>
+            <el-button circle plain size="medium" type="info" icon="el-icon-edit" @click="handleUpdate(scope.$index,scope.row)"></el-button>
           </el-tooltip>
           <el-tooltip content="删除" placement="top">
             <el-button circle plain size="medium" type="danger" icon="el-icon-delete" @click="handleDelete(scope.$index,scope.row)"></el-button>
@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { getUsers, addUser, updateUser } from '@/api/user'
+import { getUsers, addUser, updateUser, deleteUser } from '@/api/user'
 import { getRoles } from '@/api/role'
 import Pagination from '@/components/Pagination'
 import { resetTemp } from '@/utils'
@@ -132,7 +132,6 @@ export default {
     $route: {
       async handler(newVal) {
         this.listLoading = true
-        console.log(newVal.query)
         const { data, meta } = await getUsers(newVal.query)
         this.users = data
         this.page = meta
@@ -163,8 +162,8 @@ export default {
         if (!valid) return
         addUser(this.temp).then((res) => {
           const { data } = res
-          this.temp.id = data.id// 后台传回来新增记录的id
-          this.temp.created_at = data.created_at// 后台传回来新增记录的时间
+          this.temp.id = data.id
+          this.temp.created_at = data.created_at
           this.temp.updated_at = data.updated_at
           this.temp.roles = []
           this.users.unshift(Object.assign({}, this.temp))
@@ -175,7 +174,7 @@ export default {
       })
     },
     handleUpdate(idx, row) {
-      this.temp = Object.assign({}, row) // copy obj
+      this.temp = Object.assign({}, row)
       this.temp.idx = idx
       this.temp.password = null
       this.temp.password_confirmation = null
@@ -186,7 +185,7 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (!valid) return
-        const tempData = Object.assign({}, this.temp)// copy obj
+        const tempData = Object.assign({}, this.temp)
         updateUser(tempData.id, tempData).then(res => {
           const { data } = res
           tempData.updated_at = data.updated_at
@@ -194,6 +193,18 @@ export default {
           this.dialogFormVisible = false
           this.$message.success('更新成功')
         })
+      })
+    },
+    handleDelete(idx, row) {
+      this.$confirm('您确定要永久删除该用户？', '提示', confirm).then(() => {
+        deleteUser(row.id).then(res => {
+          this.users.splice(idx, 1)
+          --this.page.total
+          this.dialogFormVisible = false
+          this.$message.success('删除成功')
+        })
+      }).catch(() => {
+        this.$message.info('已取消删除')
       })
     }
   }
