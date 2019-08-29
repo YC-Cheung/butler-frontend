@@ -37,3 +37,10 @@ export function deleteRole(id) {
     method: 'delete'
   })
 }
+
+export function getRoleOptions() {
+  return request({
+    url: '/role-options',
+    method: 'get'
+  })
+}

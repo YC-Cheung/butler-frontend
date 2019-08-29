@@ -7,7 +7,7 @@
       <el-table-column prop="name" label="昵称"></el-table-column>
       <el-table-column label="角色">
         <template slot-scope="scope">
-          <el-tag v-for="role in scope.row.roleList" :key="role.rid" style="margin: 2px;">{{ role.rname }}</el-tag>
+          <el-tag v-for="role in scope.row.roles" :key="role.id" style="margin: 2px;">{{ role.name }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="created_at" label="创建时间"></el-table-column>
@@ -24,7 +24,7 @@
       </el-table-column>
     </el-table>
     <pagination :page="page"></pagination>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="40%">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" width="30%">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px">
         <el-form-item v-if="dialogStatus=='create'" label="用户名" prop="username">
           <el-input v-model="temp.username"></el-input>
@@ -39,8 +39,8 @@
           <el-input v-model="temp.password_confirmation" type="password"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="roles">
-          <el-select v-model="temp.roles" multiple placeholder="选择角色" filterable clearable>
-            <el-option v-for="role of roleOptions" :key="role.id" :label="role.name" :value="role.id"></el-option>
+          <el-select v-model="temp.roles_ids" multiple placeholder="选择角色" filterable clearable>
+            <el-option v-for="option of roleOptions" :key="option.id" :label="option.name" :value="option.id"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -54,7 +54,7 @@
 
 <script>
 import { getUsers, addUser, updateUser, deleteUser } from '@/api/user'
-import { getRoles } from '@/api/role'
+import { getRoleOptions } from '@/api/role'
 import Pagination from '@/components/Pagination'
 import { resetTemp } from '@/utils'
 
@@ -104,7 +104,8 @@ export default {
         name: null,
         password: null,
         password_confirmation: null,
-        roles: []
+        roles: [],
+        roles_ids: []
       },
       textMap: {
         update: '编辑用户',
@@ -145,8 +146,9 @@ export default {
   },
   methods: {
     async initData() {
-      const { data } = await getRoles({ all: 1 })
+      const { data } = await getRoleOptions()
       this.roleOptions = data
+      console.log(this.roleOptions)
     },
     // 新增
     handleCreate() {
@@ -180,15 +182,19 @@ export default {
       this.temp.password_confirmation = null
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      console.log(row)
       this.$nextTick(() => this.$refs['dataForm'].clearValidate())
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (!valid) return
         const tempData = Object.assign({}, this.temp)
-        updateUser(tempData.id, tempData).then(res => {
+        const { updateId, updateData } = this.getUpdateData(this.temp)
+        updateUser(updateId, updateData).then(res => {
           const { data } = res
           tempData.updated_at = data.updated_at
+          tempData.roles = data.roles
+          tempData.roles_ids = data.roles_ids
           this.users.splice(tempData.idx, 1, tempData)
           this.dialogFormVisible = false
           this.$message.success('更新成功')
@@ -206,6 +212,18 @@ export default {
       }).catch(() => {
         this.$message.info('已取消删除')
       })
+    },
+    getUpdateData(temp) {
+      const tempData = Object.assign({}, temp)
+      const updateId = tempData.id
+      const updateData = {
+        name: tempData.name,
+        password: tempData.password,
+        password_confirmation: tempData.password_confirmation,
+        roles: tempData.roles_ids
+      }
+
+      return { updateId, updateData }
     }
   }
 }
