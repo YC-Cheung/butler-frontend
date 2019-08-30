@@ -116,6 +116,12 @@ export const constantRoutes = [
         component: () => import('@/views/system/perm/index'),
         name: 'Perm',
         meta: { title: '权限管理', icon: 'user', noCache: true }
+      },
+      {
+        path: 'menu',
+        component: () => import('@/views/system/menu/index'),
+        name: 'Menu',
+        meta: { title: '菜单管理', icon: 'user', noCache: true }
       }
     ]
   }
