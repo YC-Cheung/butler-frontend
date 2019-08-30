@@ -32,10 +32,10 @@
         <el-form-item label="昵称" prop="name">
           <el-input v-model="temp.name"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <el-form-item label="密码" prop="password" :class="{ 'is-required': passwordRequired }">
           <el-input v-model="temp.password" type="password"></el-input>
         </el-form-item>
-        <el-form-item label="确认密码" prop="password_confirmation">
+        <el-form-item label="确认密码" prop="password_confirmation" :class="{ 'is-required': passwordRequired }">
           <el-input v-model="temp.password_confirmation" type="password"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="roles">
@@ -59,20 +59,20 @@ import Pagination from '@/components/Pagination'
 import { resetTemp } from '@/utils'
 
 export default {
-  name: 'User',
+  name: 'SystemUser',
   components: {
     Pagination
   },
   data() {
     const validateName = (rule, value, callback) => {
-      if (this.dialogStatus === 'create' && value === '') {
+      if (this.dialogStatus === 'create' && !value) {
         callback(new Error('必填'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value === '') {
+      if (this.passwordRequired && !value) {
         callback(new Error('请输入密码'))
       } else {
         if (this.temp.password !== '') {
@@ -82,7 +82,7 @@ export default {
       }
     }
     const validatePasswordConfirm = (rule, value, callback) => {
-      if (value === '') {
+      if (this.passwordRequired && !value) {
         callback(new Error('请再次输入密码'))
       } else if (value !== this.temp.password) {
         callback(new Error('两次输入密码不一致!'))
@@ -100,8 +100,8 @@ export default {
       temp: {
         idx: null, // tableData中的下标
         id: null,
-        username: null,
-        name: null,
+        username: '',
+        name: '',
         password: null,
         password_confirmation: null,
         roles: [],
@@ -112,8 +112,9 @@ export default {
         create: '新增用户'
       },
       rules: {
-        uname: [{ validator: validateName, trigger: 'blur' }],
-        password: [{ validator: validatePassword, trigger: 'blur' }],
+        username: [{ required: true, validator: validateName, trigger: 'blur' }],
+        name: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
+        password: [{ required: this.dialogStatus === 'create', validator: validatePassword, trigger: 'blur' }],
         password_confirmation: [{ validator: validatePasswordConfirm, trigger: 'change' }]
       },
       checkAll: false,
@@ -127,6 +128,11 @@ export default {
         uid: null,
         rids: []
       }
+    }
+  },
+  computed: {
+    passwordRequired() {
+      return this.dialogStatus === 'create'
     }
   },
   watch: {
