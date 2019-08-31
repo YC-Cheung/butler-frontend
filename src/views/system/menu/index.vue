@@ -33,6 +33,11 @@
         <el-form-item label="组件" prop="component">
           <el-input v-model="temp.component"></el-input>
         </el-form-item>
+        <el-form-item label="角色" prop="roles">
+          <el-checkbox-group v-model="temp.roles">
+            <el-checkbox v-for="role in roleOptions" :key="role.id" :label="role.id">{{ role.name }}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
@@ -44,6 +49,7 @@
 
 <script>
 import { getMenu, addMenu, updateMenu, deleteMenu } from '@/api/menu'
+import { getRoleOptions } from '@/api/role'
 import Pagination from '@/components/Pagination'
 import { resetTemp } from '@/utils'
 
@@ -60,13 +66,15 @@ export default {
       dialogFormVisible: false,
       editRolesDialogVisible: false,
       dialogStatus: '',
+      roleOptions: [],
       temp: {
         idx: null, // tableData中的下标
         id: null,
         name: null,
         title: null,
         path: null,
-        component: null
+        component: null,
+        roles: []
       },
       textMap: {
         update: '编辑菜单',
@@ -92,10 +100,14 @@ export default {
     }
   },
   created() {
-    // this.initData()
+    this.initData()
   },
   methods: {
-    // 新增
+    async initData() {
+      const { data } = await getRoleOptions()
+      this.roleOptions = data
+      console.log(this.roleOptions)
+    },
     handleCreate() {
       resetTemp(this.temp)
       this.dialogStatus = 'create'
@@ -155,7 +167,8 @@ export default {
         name: tempData.name,
         title: tempData.title,
         path: tempData.path,
-        component: tempData.component
+        component: tempData.component,
+        roles: tempData.roles
       }
 
       return { updateId, updateData }

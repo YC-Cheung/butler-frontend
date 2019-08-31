@@ -12,6 +12,9 @@
           <el-tooltip content="编辑" placement="top">
             <el-button circle plain size="medium" type="info" icon="el-icon-edit" @click="handleUpdate(scope.$index,scope.row)"></el-button>
           </el-tooltip>
+          <el-tooltip content="菜单" placement="top">
+            <el-button circle plain size="medium" type="danger" icon="el-icon-delete" @click="handleUpdateMenu(scope.$index,scope.row)"></el-button>
+          </el-tooltip>
           <el-tooltip content="删除" placement="top">
             <el-button circle plain size="medium" type="danger" icon="el-icon-delete" @click="handleDelete(scope.$index,scope.row)"></el-button>
           </el-tooltip>
