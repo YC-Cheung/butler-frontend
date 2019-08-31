@@ -1,5 +1,5 @@
-import { asyncRoutes, constantRoutes } from '@/router'
-
+import { constantRoutes } from '@/router'
+import Layout from '@/layout'
 /**
  * Use meta.role to determine if the current user has permission
  * @param roles
@@ -11,6 +11,26 @@ function hasPermission(roles, route) {
   } else {
     return true
   }
+}
+
+function dataArrayToRoutes(data) {
+  console.log(data)
+  const routes = []
+  data.forEach(item => {
+    const tmp = { ...item }
+    if (tmp.component === 'Layout') {
+      tmp.component = Layout
+    } else {
+      let subView = tmp.component
+      subView = subView.replace(/^\/*/g, '')
+      tmp.component = () => import(`@/views/${subView}`)
+    }
+    if (tmp.children) {
+      tmp.children = dataArrayToRoutes(tmp.children)
+    }
+    routes.push(tmp)
+  })
+  return routes
 }
 
 /**
@@ -47,14 +67,16 @@ const mutations = {
 }
 
 const actions = {
-  generateRoutes({ commit }, roles) {
+  generateRoutes({ commit }, menu) {
     return new Promise(resolve => {
-      let accessedRoutes
-      if (roles.includes('admin')) {
-        accessedRoutes = asyncRoutes || []
-      } else {
-        accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
-      }
+      // if (roles.includes('admin')) {
+      //   accessedRoutes = asyncRoutes || []
+      // } else {
+      //   accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
+      // }
+      // commit('SET_ROUTES', accessedRoutes)
+      console.log(menu)
+      const accessedRoutes = dataArrayToRoutes(menu)
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })

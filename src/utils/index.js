@@ -360,3 +360,7 @@ export function resetTemp(temp) {
   }
   return temp
 }
+
+export function isEmpty(val) {
+  return typeof val === 'undefined' || val === null || val === ''
+}

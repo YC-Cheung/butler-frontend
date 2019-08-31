@@ -7,7 +7,8 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
-  roles: []
+  roles: [],
+  menu: []
 }
 
 const mutations = {
@@ -25,6 +26,9 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_MENUS: (state, menus) => {
+    state.menus = menus
   }
 }
 
@@ -41,52 +45,52 @@ const actions = {
     return data
   },
 
-  async getInfo({ commit }) {
-    const { data } = await authApi.getInfo()
+  // async getInfo({ commit }) {
+  //   const { data } = await authApi.getInfo()
 
-    if (!data) {
-      return Promise.reject('登录认证失效，请重新登录')
-    }
+  //   if (!data) {
+  //     return Promise.reject('登录认证失效，请重新登录')
+  //   }
 
-    const { name, avatar } = data
-    commit('SET_ROLES', ['admin'])
-    commit('SET_NAME', name)
-    commit('SET_AVATAR', avatar)
+  //   const { name, avatar } = data
+  //   commit('SET_ROLES', ['admin'])
+  //   commit('SET_NAME', name)
+  //   commit('SET_AVATAR', avatar)
 
-    return {
-      name: name,
-      avatar: avatar,
-      roles: ['admin']
-    }
-  },
+  //   return {
+  //     name: name,
+  //     avatar: avatar,
+  //     roles: ['admin']
+  //   }
+  // },
 
   // get user info
-  // getInfo({ commit }) {
-  //   return new Promise((resolve, reject) => {
-  //     authApi.getInfo().then(response => {
-  //       const { data } = response
+  getInfo({ commit }) {
+    return new Promise((resolve, reject) => {
+      authApi.getInfo().then(response => {
+        const { data } = response
 
-  //       if (!data) {
-  //         reject('Verification failed, please Login again.')
-  //       }
+        if (!data) {
+          reject('Verification failed, please Login again.')
+        }
 
-  //       const { roles, name, avatar, introduction } = data
+        const { roles, name, avatar, introduction, menu } = data
 
-  //       // roles must be a non-empty array
-  //       if (!roles || roles.length <= 0) {
-  //         reject('getInfo: roles must be a non-null array!')
-  //       }
-
-  //       commit('SET_ROLES', roles)
-  //       commit('SET_NAME', name)
-  //       commit('SET_AVATAR', avatar)
-  //       commit('SET_INTRODUCTION', introduction)
-  //       resolve(data)
-  //     }).catch(error => {
-  //       reject(error)
-  //     })
-  //   })
-  // },
+        // roles must be a non-empty array
+        if (!roles || roles.length <= 0) {
+          reject('getInfo: roles must be a non-null array!')
+        }
+        commit('SET_ROLES', roles)
+        commit('SET_NAME', name)
+        commit('SET_AVATAR', avatar)
+        commit('SET_INTRODUCTION', introduction)
+        commit('SET_MENUS', menu)
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
 
   // user logout
   logout({ commit, state }) {

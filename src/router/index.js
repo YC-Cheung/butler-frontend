@@ -92,39 +92,39 @@ export const constantRoutes = [
         meta: { title: 'Profile', icon: 'user', noCache: true }
       }
     ]
-  },
-  {
-    path: '/system',
-    component: Layout,
-    redirect: 'noRedirect',
-    meta: { title: '系统', icon: 'system' },
-    children: [
-      {
-        path: 'user',
-        component: () => import('@/views/system/user/index'),
-        name: 'User',
-        meta: { title: '用户管理', icon: 'user', noCache: true }
-      },
-      {
-        path: 'role',
-        component: () => import('@/views/system/role/index'),
-        name: 'Role',
-        meta: { title: '角色管理', icon: 'user', noCache: true }
-      },
-      {
-        path: 'perm',
-        component: () => import('@/views/system/perm/index'),
-        name: 'Perm',
-        meta: { title: '权限管理', icon: 'user', noCache: true }
-      },
-      {
-        path: 'menu',
-        component: () => import('@/views/system/menu/index'),
-        name: 'Menu',
-        meta: { title: '菜单管理', icon: 'user', noCache: true }
-      }
-    ]
   }
+  // {
+  //   path: '/system',
+  //   component: Layout,
+  //   redirect: 'noRedirect',
+  //   meta: { title: '系统', icon: 'system' },
+  //   children: [
+  //     {
+  //       path: 'user',
+  //       component: () => import('@/views/system/user/index'),
+  //       name: 'User',
+  //       meta: { title: '用户管理', icon: 'user', noCache: true }
+  //     },
+  //     {
+  //       path: 'role',
+  //       component: () => import('@/views/system/role/index'),
+  //       name: 'Role',
+  //       meta: { title: '角色管理', icon: 'user', noCache: true }
+  //     },
+  //     {
+  //       path: 'perm',
+  //       component: () => import('@/views/system/perm/index'),
+  //       name: 'Perm',
+  //       meta: { title: '权限管理', icon: 'user', noCache: true }
+  //     },
+  //     {
+  //       path: 'menu',
+  //       component: () => import('@/views/system/menu/index'),
+  //       name: 'Menu',
+  //       meta: { title: '菜单管理', icon: 'user', noCache: true }
+  //     }
+  //   ]
+  // }
 ]
 
 /**
