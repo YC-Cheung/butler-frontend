@@ -26,7 +26,7 @@ export function addRole(data) {
 export function updateRole(id, data) {
   return request({
     url: `/roles/${id}`,
-    method: 'put',
+    method: 'patch',
     data
   })
 }
