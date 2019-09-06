@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleCreate">{{ textMap.create }}</el-button>
+    <el-button v-perm="'system_user:create'" type="primary" icon="el-icon-plus" size="mini" @click="handleCreate">{{ textMap.create }}</el-button>
     <el-table v-loading="listLoading" :data="users" style="width: 100%" border highlight-current-row>
       <el-table-column prop="id" label="用户id"></el-table-column>
       <el-table-column prop="username" label="用户名"></el-table-column>
@@ -54,6 +54,7 @@
 
 <script>
 import { getUsers, addUser, updateUser, deleteUser } from '@/api/user'
+import checkPerm from '@/utils/perm'
 import { getRoleOptions } from '@/api/role'
 import Pagination from '@/components/Pagination'
 import { resetTemp } from '@/utils'
@@ -148,6 +149,7 @@ export default {
   },
   created() {
     this.initData()
+    console.log(checkPerm('system_user:create'))
   },
   methods: {
     async initData() {
