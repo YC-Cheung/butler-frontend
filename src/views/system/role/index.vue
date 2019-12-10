@@ -177,7 +177,7 @@ export default {
       })
     },
     handleDelete(idx, row) {
-      this.$confirm('您确定要永久删除该权限？', '提示', confirm).then(() => {
+      this.$confirm('您确定要永久删除该角色？', '提示', confirm).then(() => {
         deleteRole(row.id).then(res => {
           this.items.splice(idx, 1)
           --this.page.total
